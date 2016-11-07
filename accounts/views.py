@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 import stripe
 import datetime
 from django.conf import settings
+import arrow
 
 stripe.api_key = settings.STRIPE_SECRET
 
@@ -16,16 +17,19 @@ def register(request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             try:
-                customer = stripe.Charge.create(
-                    amount=499,
-                    currency="USD",
-                    description=form.cleaned_data['email'],
-                    card=form.cleaned_data['stripe_id'],
-                )
+                customer = stripe.Customer.create(
+                    email=form.cleaned_data['email'],
+                    card=form.cleaned_data['stripe_id'],  # this is currently the card token/id
+                    plan='REG_MONTHLY')
             except stripe.error.CardError, e:
                 messages.error(request, "Your card was declined!")
-            if customer.paid:
-                form.save()
+
+            if customer:
+                user = form.save()
+                user.stripe_id = customer.id
+                user.subscription_end = arrow.now().replace(weeks=+4).datetime
+                user.save()
+
             user = auth.authenticate(email=request.POST.get('email'),
                                      password=request.POST.get('password1'))
             if user:
@@ -76,3 +80,13 @@ def logout(request):
     auth.logout(request)
     messages.success(request, 'You have successfully logged out')
     return redirect(reverse('index'))
+
+
+@login_required(login_url='/accounts/login/')
+def cancel_subscription(request):
+   try:
+       customer = stripe.Customer.retrieve(request.user.stripe_id)
+       customer.cancel_subscription(at_period_end=True)
+   except Exception, e:
+       messages.error(request, e)
+   return redirect('profile')
