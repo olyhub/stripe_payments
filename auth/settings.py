@@ -143,5 +143,5 @@ STRIPE_PUBLISHABLE = os.getenv('STRIPE_PUBLISHABLE', 'publishable key')
 STRIPE_SECRET = os.getenv('STRIPE_SECRET', 'secret key')
 
 SITE_URL = 'http://127.0.0.1:8000'
-PAYPAL_NOTIFY_URL = 'HTTP://127.0.0.1/a-very-hard-to-gues-url/'
+PAYPAL_NOTIFY_URL = 'http://f70f9d61.ngrok.io/a-very-hard-to-guess-url/'
 PAYPAL_RECEIVER_EMAIL= 'dlux4321@gmail.com'

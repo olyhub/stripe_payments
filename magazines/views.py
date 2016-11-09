@@ -5,7 +5,7 @@ from .models import Magazine
 
 def all_magazine(request):
     magazine = Magazine.objects.all()
-    return render(request, "magazine/magazine.html", {"magazine": magazine})
+    return render(request, "magazines/magazines.html", {"magazines": magazine})
 
 from django.shortcuts import render
 
