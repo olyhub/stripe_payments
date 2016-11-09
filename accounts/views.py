@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from models import User
 
+
 stripe.api_key = settings.STRIPE_SECRET
 
 
@@ -114,3 +115,4 @@ def subscriptions_webhook(request):
     except stripe.InvalidRequestError, e:
         return HttpResponse(status=404)
     return HttpResponse(status=200)
+
