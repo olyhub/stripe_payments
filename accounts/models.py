@@ -28,6 +28,7 @@ class AccountUserManager(UserManager):
 
 
 class User(AbstractUser):
+    stripe_id = models.CharField(max_length=40, default='')
     objects = AccountUserManager()
 
     def is_subscribed(self, magazine):
